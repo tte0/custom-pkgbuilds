@@ -9,8 +9,8 @@ groups=(kde-applications kde-multimedia)
 depends=(baloo kirigami2 vlc extra-cmake-modules kdoctools kfilemetadata)
 makedepends=(git cmake extra-cmake-modules kdoctools kio5 ki18n5)
 
-source=("git+https://invent.kde.org/multimedia/elisa.git#branch=release/25.04" "fix-looping.patch" "fix-shuffle.patch")
-sha256sums=('SKIP' 'SKIP' 'SKIP')
+source=("git+https://invent.kde.org/multimedia/elisa.git#branch=release/25.04" "fix-looping.patch" "fix-shuffle.patch" "settings-form-debloat.patch")
+sha256sums=('SKIP' 'SKIP' 'SKIP' 'SKIP')
 
 pkgver() {
   cd "$srcdir/elisa"
@@ -23,6 +23,7 @@ prepare() {
   pwd
   patch -Np0 -i "$srcdir/fix-looping.patch"
   patch -Np1 -i "$srcdir/fix-shuffle.patch"
+  patch -Np1 -i "$srcdir/settings-form-debloat.patch"
 }
 
 build() {
