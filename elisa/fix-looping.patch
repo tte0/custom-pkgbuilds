@@ -1,0 +1,59 @@
+--- src/mpris2/mediaplayer2player.cpp   2025-05-15 19:16:12.171434757 +0300
++++ src/mpris2/mediaplayer2player.cpp   2025-05-15 18:36:59.986660268 +0300
+@@ -524,12 +524,10 @@
+     MediaPlayListProxyModel::Repeat repeatMode;
+ 
+     if (m_playListControler) {
+-        if (loopStatus == QStringLiteral("Playlist")) {
++        if (loopStatus == QStringLiteral("Playlist") || loopStatus == QStringLiteral("None")) {
+             repeatMode = MediaPlayListProxyModel::Playlist;
+         } else if (loopStatus == QStringLiteral("Track")) {
+             repeatMode = MediaPlayListProxyModel::One;
+-        } else {
+-            repeatMode = MediaPlayListProxyModel::None;
+         }
+ 
+         m_playListControler->setRepeatMode(repeatMode);
+@@ -543,16 +541,16 @@
+         const auto repeatMode = m_playListControler->repeatMode();
+         switch (repeatMode) {
+             case MediaPlayListProxyModel::Playlist:
++            case MediaPlayListProxyModel::None: // Treat None like Playlist
+                 return QStringLiteral("Playlist");
+             case MediaPlayListProxyModel::One:
+                 return QStringLiteral("Track");
+-            case MediaPlayListProxyModel::None:
+             default:
+-                return QStringLiteral("None");
++                return QStringLiteral("Playlist");
+         }
+     }
+ 
+-    return QStringLiteral("None");
++    return QStringLiteral("Playlist");
+ }
+ 
+ void MediaPlayer2Player::repeatModeChanged()
+--- src/qml/MediaPlayerControl.qml  2025-05-15 19:16:12.172451975 +0300
++++ src/qml/MediaPlayerControl.qml  2025-05-15 18:45:57.975279177 +0300
+@@ -253,7 +253,8 @@
+                     checkable: true
+                     checked: ElisaApplication.mediaPlayListProxyModel.repeatMode !== 0
+                     onClicked: {
+-                        ElisaApplication.mediaPlayListProxyModel.repeatMode = (ElisaApplication.mediaPlayListProxyModel.repeatMode + 1) % 3
++                        ElisaApplication.mediaPlayListProxyModel.repeatMode = (ElisaApplication.mediaPlayListProxyModel.repeatMode === 1) ? 2 : 1
++
+                     }
+                     onPressAndHold: {
+                         menu.popup()
+--- src/qml/mobile/MobileTrackPlayer.qml    2025-05-15 19:16:12.173491915 +0300
++++ src/qml/mobile/MobileTrackPlayer.qml    2025-05-15 18:46:07.317213426 +0300
+@@ -286,7 +286,7 @@
+                     checked: ElisaApplication.mediaPlayListProxyModel.repeatMode !== 0
+ 
+                     onClicked: {
+-                        ElisaApplication.mediaPlayListProxyModel.repeatMode = (ElisaApplication.mediaPlayListProxyModel.repeatMode + 1) % 3
++                        ElisaApplication.mediaPlayListProxyModel.repeatMode = (ElisaApplication.mediaPlayListProxyModel.repeatMode === 1) ? 2 : 1
+                     }
+                     onPressAndHold: {
+                         menu.popup()

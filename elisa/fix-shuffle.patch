@@ -1,0 +1,75 @@
+diff '--color=auto' -Naur elisa/src/mediaplaylistproxymodel.cpp elisa-modified/src/mediaplaylistproxymodel.cpp
+--- elisa/src/mediaplaylistproxymodel.cpp	2025-05-16 15:01:30.090995603 +0300
++++ elisa-modified/src/mediaplaylistproxymodel.cpp	2025-05-16 15:05:41.550348097 +0300
+@@ -407,47 +407,6 @@
+                         from.append(index(d->mRandomMapping.at(i), 0));
+                     }
+                     from.append(index(d->mRandomMapping.at(playListSize - 1), 0));
+-                } else if (value == MediaPlayListProxyModel::Shuffle::Album) { // album shuffle
+-                    QHash<int, QList<int>> indexPerAlbumId;
+-                    int currentAlbumId = data(d->mCurrentTrack,  MediaPlayList::AlbumIdRole).toInt();
+-
+-                    // Adding the album of the current track first
+-                    QList<int> albumIds = {currentAlbumId};
+-                    indexPerAlbumId[currentAlbumId] = {};
+-
+-                    // This is used to generate fictive (negative) albumIds for
+-                    // tracks that don't belong to an album; this will allow to
+-                    // spread the loose tracks in between full albums rather
+-                    // than have them artificially grouped together
+-                    int fictiveAlbumId = -1;
+-
+-                    for (int i = 0; i < playListSize; ++i) {
+-                        int albumId = data(index(i, 0), MediaPlayList::AlbumIdRole).toInt();
+-                        if (albumId == 0) {
+-                            albumId = fictiveAlbumId;
+-                            --fictiveAlbumId;
+-                        }
+-                        if (indexPerAlbumId.contains(albumId)) {
+-                            indexPerAlbumId[albumId].append(i);
+-                        } else {
+-                            albumIds.append(albumId);
+-                            QList<int> tracks = { i };
+-                            indexPerAlbumId[albumId] = tracks;
+-                        }
+-                    }
+-
+-                    std::shuffle(++albumIds.begin(), albumIds.end(), d->mRandomGenerator);
+-
+-                    QList<int> newRandomMapping;
+-                    newRandomMapping.reserve(playListSize);
+-                    for (int albumId : albumIds) {
+-                        const auto &sourceRows = indexPerAlbumId[albumId];
+-                        for (int sourceRow : sourceRows) {
+-                            from.append(index(sourceRow, 0));
+-                            newRandomMapping.append(sourceRow);
+-                        }
+-                    }
+-                    d->mRandomMapping = newRandomMapping;
+                 }
+                 changePersistentIndexList(from, to);
+             }
+diff '--color=auto' -Naur elisa/src/qml/MediaPlayerControl.qml elisa-modified/src/qml/MediaPlayerControl.qml
+--- elisa/src/qml/MediaPlayerControl.qml	2025-05-16 15:01:30.137521476 +0300
++++ elisa-modified/src/qml/MediaPlayerControl.qml	2025-05-16 15:06:51.715004084 +0300
+@@ -193,7 +193,7 @@
+                     checked: ElisaApplication.mediaPlayListProxyModel.shuffleMode !== 0
+ 
+                     onClicked: {
+-                        ElisaApplication.mediaPlayListProxyModel.shuffleMode = (ElisaApplication.mediaPlayListProxyModel.shuffleMode + 1) % 3
++                        ElisaApplication.mediaPlayListProxyModel.shuffleMode = (ElisaApplication.mediaPlayListProxyModel.shuffleMode + 1) % 2
+                     }
+                     onPressAndHold: {
+                         menu.popup()
+diff '--color=auto' -Naur elisa/src/qml/mobile/MobileTrackPlayer.qml elisa-modified/src/qml/mobile/MobileTrackPlayer.qml
+--- elisa/src/qml/mobile/MobileTrackPlayer.qml	2025-05-16 15:01:30.137664553 +0300
++++ elisa-modified/src/qml/mobile/MobileTrackPlayer.qml	2025-05-16 15:06:58.867744331 +0300
+@@ -231,7 +231,7 @@
+                     checked: ElisaApplication.mediaPlayListProxyModel.shuffleMode !== 0
+ 
+                     onClicked: {
+-                        ElisaApplication.mediaPlayListProxyModel.shuffleMode = (ElisaApplication.mediaPlayListProxyModel.shuffleMode + 1) % 3
++                        ElisaApplication.mediaPlayListProxyModel.shuffleMode = (ElisaApplication.mediaPlayListProxyModel.shuffleMode + 1) % 2
+                     }
+                     onPressAndHold: {
+                         menu.popup()

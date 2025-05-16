@@ -1,0 +1,37 @@
+pkgname=elisa
+pkgver=25.04.1
+pkgrel=1
+pkgdesc='A simple music player aiming to provide a nice experience for its users'
+url='https://apps.kde.org/elisa/'
+arch=(x86_64)
+license=(LGPL3)
+groups=(kde-applications kde-multimedia)
+depends=(baloo kirigami2 vlc extra-cmake-modules kdoctools kfilemetadata)
+makedepends=(git cmake extra-cmake-modules kdoctools kio5 ki18n5)
+
+source=("git+https://invent.kde.org/multimedia/elisa.git#branch=release/25.04" "fix-looping.patch" "fix-shuffle.patch")
+sha256sums=('SKIP' 'SKIP' 'SKIP')
+
+pkgver() {
+  cd "$srcdir/elisa"
+  # Use the latest tag or commit date for versioning
+  git describe --tags --abbrev=0 | sed 's/^v//'
+}
+
+prepare() {
+  cd "$srcdir/elisa"
+  pwd
+  patch -Np0 -i "$srcdir/fix-looping.patch"
+  patch -Np1 -i "$srcdir/fix-shuffle.patch"
+}
+
+build() {
+  cd "$srcdir/elisa"
+  cmake -B build -S . -DBUILD_TESTING=OFF
+  cmake --build build
+}
+
+package() {
+  cd "$srcdir/elisa"
+  DESTDIR="$pkgdir" cmake --install build
+}
