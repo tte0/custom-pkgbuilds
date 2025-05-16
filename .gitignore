@@ -12,7 +12,4 @@
 */pkg/
 */src/
 
-*/*/*/
-
-!*/keys/
-!*/keys/**
+elisa/elisa/
