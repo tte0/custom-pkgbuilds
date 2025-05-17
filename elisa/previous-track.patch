@@ -1,0 +1,11 @@
+--- elisa/src/mediaplaylistproxymodel.h	2025-05-16 21:01:42.190230131 +0300
++++ elisa-modified/src/mediaplaylistproxymodel.h	2025-05-17 19:24:32.737556528 +0300
+@@ -193,7 +193,7 @@
+ 
+     [[nodiscard]] bool canOpenLoadedPlaylist() const;
+ 
+-    int mSeekToBeginningDelay = 2000;
++    int mSeekToBeginningDelay = 4000;
+ 
+ 
+ public Q_SLOTS:
